@@ -37,6 +37,7 @@ pooch==1.6.0
 prompt-toolkit==3.0.27
 pure-eval==0.2.2
 pycparser==2.21
+pydub==0.25.1
 Pygments==2.11.2
 pyparsing==3.0.7
 pyrsistent==0.18.1
