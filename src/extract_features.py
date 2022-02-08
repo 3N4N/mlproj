@@ -7,8 +7,8 @@ from tqdm.auto import tqdm
 
 
 tqdmcols = 80
-dataset_path = './input/gtzan/'
-csv_path = './output/data.csv'
+dataset_path = './data/gtzan/'
+csv_path = './out/data.csv'
 
 header = 'filename chroma_stft rms spectral_centroid spectral_bandwidth rolloff zero_crossing_rate'
 for i in range(1, 21):

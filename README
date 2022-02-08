@@ -11,8 +11,8 @@ PREPARATION
 2. Download the GTZAN dataset from kaggle.
 3. Move the dataset to the proper location.
 
-    mkdir -p ./input
-    mv ~/Downloads/GTZAN_data.zip input
+    mkdir -p ./data
+    mv ~/Downloads/GTZAN_data.zip data/
 
 4. Create and activate a virtualenv.
 
@@ -26,7 +26,7 @@ PREPARATION
 
 6. Extract the features.
 
-    python3 extract_features.py
+    python3 src/extract_features.py
 
 7. Deactivate the virtualenv (or simply close the terminal)
 
