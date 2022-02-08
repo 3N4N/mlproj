@@ -20,14 +20,9 @@ header += ' label'
 header = header.split()
 
 genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
-genres = ['jazz']
+# genres = ['jazz']
 
 diraudiofiles = dataset_path + "genres_original/"
-
-file = open(csv_path, 'w', newline='')
-with file:
-    writer = csv.writer(file)
-    writer.writerow(header)
 
 data_arr = None
 for g in tqdm(genres, ncols=tqdmcols):
