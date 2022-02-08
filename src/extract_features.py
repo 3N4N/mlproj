@@ -1,14 +1,35 @@
 import numpy as np
-# import pandas as pd
 import csv
 import os
 import librosa
 from tqdm.auto import tqdm
+import argparse
+
 
 
 tqdmcols = 80
 dataset_path = './data/gtzan/'
-csv_path = './out/data.csv'
+
+
+# Initialize parser
+parser = argparse.ArgumentParser()
+
+# Adding optional argument
+parser.add_argument("-s", "--usesplit",
+                    action = "store_true",
+                    help = "Use split data")
+
+# Read arguments from command line
+args = parser.parse_args()
+
+if not args.usesplit:
+    csv_path = './out/features_30sec.csv'
+    diraudiofiles = dataset_path + "genres_original/"
+else:
+    csv_path = './out/features_3sec.csv'
+    diraudiofiles = dataset_path + "genres_3sec/"
+
+
 
 header = 'filename chroma_stft rms spectral_centroid spectral_bandwidth rolloff zero_crossing_rate'
 for i in range(1, 21):
@@ -19,15 +40,15 @@ header = header.split()
 genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
 # genres = ['jazz']
 
-diraudiofiles = dataset_path + "genres_original/"
 
 data_arr = None
 for g in tqdm(genres, ncols=tqdmcols):
     for filename in tqdm(os.listdir(diraudiofiles + g), leave=False, ncols=tqdmcols):
-        songname = diraudiofiles + f'{g}/{filename}'
+        filepath = diraudiofiles + f'{g}/{filename}'
+        print(filepath)
         if filename == 'jazz.00054.wav':
             continue
-        y, sr = librosa.load(songname, mono=True, duration=30)
+        y, sr = librosa.load(filepath, mono=True, duration=30)
         chroma_stft = librosa.feature.chroma_stft(y=y, sr=sr)
         rms = librosa.feature.rms(y=y)
         spec_cent = librosa.feature.spectral_centroid(y=y, sr=sr)
