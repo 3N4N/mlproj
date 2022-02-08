@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import csv
 import os
 import librosa
@@ -8,10 +8,7 @@ from tqdm.auto import tqdm
 
 tqdmcols = 80
 dataset_path = './input/gtzan/'
-csv_path = './data.csv'
-
-df = pd.read_csv(dataset_path + 'features_3_sec.csv')
-df.columns
+csv_path = './output/data.csv'
 
 header = 'filename chroma_stft rms spectral_centroid spectral_bandwidth rolloff zero_crossing_rate'
 for i in range(1, 21):
