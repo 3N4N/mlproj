@@ -4,6 +4,7 @@ import os
 import librosa
 from tqdm.auto import tqdm
 import argparse
+import matplotlib.pyplot as plt
 
 
 
@@ -65,7 +66,6 @@ genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split
 
 def extract_numeric_features():
     print("Extracting numeric features...")
-    return
     header = 'filename chroma_stft rms spectral_centroid spectral_bandwidth rolloff zero_crossing_rate'
     for i in range(1, 21):
         header += f' mfcc{i}'
@@ -100,13 +100,14 @@ def extract_numeric_features():
 
 
 def extract_melspectograms():
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
     print("Extracting mel-scaled spectrograms...")
-    return
-    for g in genres:
+    for g in tqdm(genres, ncols=tqdmcols):
         dirpath = os.path.join(f'{melspec_path}/{g}')
         if not os.path.isdir(dirpath):
             os.makedirs(dirpath)
-        for filename in tqdm(os.listdir(f'{diraudiofiles}/{g}')):
+        for filename in tqdm(os.listdir(f'{diraudiofiles}/{g}'), leave=False, ncols=tqdmcols):
             if filename in ignorefiles:
                 continue
             filepath  =  f'{diraudiofiles}/{g}/{filename}'
@@ -117,6 +118,7 @@ def extract_melspectograms():
             y,sr = librosa.load(filepath)
             mels = librosa.feature.melspectrogram(y=y,sr=sr)
             p = plt.imshow(librosa.power_to_db(mels,ref=np.max))
+            plt.axis('off')
             plt.savefig(melspecimgfile)
 
 def extract_allfeatures():
