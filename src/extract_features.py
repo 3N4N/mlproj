@@ -46,11 +46,11 @@ args = parser.parse_args()
 if args.usesplit:
     diraudiofiles = f'{dataset_path}/genres_3sec'
     csv_path = f'{dataset_path}/features/features_3sec.csv'
-    melspec_path = f'{features_path}/melspecs_3sec'
+    melspec_path = f'{dataset_path}/melspecs_3sec'
 else:
     diraudiofiles = f'{dataset_path}/genres_original'
     csv_path = f'{dataset_path}/features/features_30sec.csv'
-    melspec_path = f'{features_path}/melspecs_30sec'
+    melspec_path = f'{dataset_path}/melspecs_30sec'
 
 
 
@@ -100,9 +100,8 @@ def extract_numeric_features():
 
 
 def extract_melspectograms():
-    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
     print("Extracting mel-scaled spectrograms...")
+    plt.switch_backend('agg')
     for g in tqdm(genres, ncols=tqdmcols):
         dirpath = os.path.join(f'{melspec_path}/{g}')
         if not os.path.isdir(dirpath):
@@ -120,6 +119,7 @@ def extract_melspectograms():
             p = plt.imshow(librosa.power_to_db(mels,ref=np.max))
             plt.axis('off')
             plt.savefig(melspecimgfile)
+            plt.close('all')
 
 def extract_allfeatures():
     extract_numeric_features()
