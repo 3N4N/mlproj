@@ -12,23 +12,27 @@ PREPARATION
 3. Move the dataset to the proper location.
 
     mkdir -p ./data
-    mv ~/Downloads/GTZAN_data.zip data/
+    unzip ~/Downloads/GTZAN_data.zip -d data/
 
-4. Create and activate a virtualenv.
+4. Rename the dataset.
+
+    mv data/GTZAN_data data/gtzan
+
+5. Create and activate a virtualenv.
 
     virtualenv create mlproj
     source ./mlproj/bin/activate    # Linux
     "./mlproj/Scripts/activate"     # Windows
 
-5. Install required packages with the following commands
+6. Install required packages with the following commands
 
     pip install -r requirements.txt
 
-6. Extract the features.
+7. Extract the features.
 
     python src/extract_features.py
 
-7. Deactivate the virtualenv (or simply close the terminal)
+8. Deactivate the virtualenv (or simply close the terminal)
 
 Now you should have a `data.csv` in your project root. That file contains the
 extracted features.
