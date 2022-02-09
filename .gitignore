@@ -1,12 +1,16 @@
+# ignore editor artifacts
 .ipynb_checkpoints/
-
 *.vim
 tags
 
 # ignore gtzan dataset
-data/gtzan/features/data.json
-data/gtzan/features_30_sec.csv
-data/gtzan/features_3_sec.csv
-data/gtzan/genres_3sec/
 data/gtzan/genres_original/
 data/gtzan/images_original/
+data/gtzan/features_30_sec.csv
+data/gtzan/features_3_sec.csv
+
+# ignore large-sized featrue files
+# since it takes little time to generate them
+data/gtzan/features/data.json
+data/gtzan/genres_3sec/
+data/gtzan/melspecs_3sec/
