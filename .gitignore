@@ -2,3 +2,11 @@
 
 *.vim
 tags
+
+# ignore gtzan dataset
+data/gtzan/features/data.json
+data/gtzan/features_30_sec.csv
+data/gtzan/features_3_sec.csv
+data/gtzan/genres_3sec/
+data/gtzan/genres_original/
+data/gtzan/images_original/
