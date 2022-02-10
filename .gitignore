@@ -8,6 +8,8 @@ data/gtzan/genres_original/
 data/gtzan/images_original/
 data/gtzan/features_30_sec.csv
 data/gtzan/features_3_sec.csv
+data/gtzan/test/
+data/gtzan/train/
 
 # ignore large-sized featrue files
 # since it takes little time to generate them
