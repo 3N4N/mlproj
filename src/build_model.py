@@ -4,8 +4,8 @@ import shutil
 from tqdm.auto import tqdm
 import numpy as np
 
+import tensorflow as tf
 from keras import layers, models
-from keras import optimizers
 from keras.initializers import glorot_uniform
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -18,7 +18,7 @@ train_test_split_done = True
 tqdmcols = 80
 dataset_path = './data/gtzan'
 features_path = f'{dataset_path}/features'
-audios_path = f'{dataset_path}/genres_3sec'
+melspec_path = f'{dataset_path}/melspecs_3sec'
 csv_path = f'{dataset_path}/features/features_3sec.csv'
 melspec_path = f'{dataset_path}/melspecs_3sec'
 ignorefiles = ['jazz.00054.wav']
@@ -40,18 +40,18 @@ def prep_train_test():
             os.makedirs(f'{train_dir}/{g}')
         if not os.path.isdir(f'{test_dir}/{g}'):
             os.makedirs(f'{test_dir}/{g}')
-        filenames = os.listdir(os.path.join(f'{audios_path}/{g}'))
+        filenames = os.listdir(os.path.join(f'{melspec_path}/{g}'))
         random.shuffle(filenames)
-        test_files = filenames[:100]
-        train_files = filenames[100:]
+        train_files = filenames[:900]
+        test_files = filenames[900:]
         for f in tqdm(train_files, leave=False, ncols=tqdmcols):
-            shutil.copy(f'{audios_path}/{g}/{f}', f'{train_dir}/{g}')
+            shutil.copy(f'{melspec_path}/{g}/{f}', f'{train_dir}/{g}')
         for f in tqdm(test_files, leave=False, ncols=tqdmcols):
-            shutil.copy(f'{audios_path}/{g}/{f}', f'{test_dir}/{g}')
+            shutil.copy(f'{melspec_path}/{g}/{f}', f'{test_dir}/{g}')
 
 
 
-def gen_img_data(target_size=(640,480)):
+def gen_img_data(train_dir, validation_dir, target_size=(640,480)):
     from keras.preprocessing.image import ImageDataGenerator
 
     train_datagen = ImageDataGenerator(rescale=1./255)
@@ -62,12 +62,13 @@ def gen_img_data(target_size=(640,480)):
                                                         batch_size=128)
 
     validation_dir = test_dir
-    vali_datagen = ImageDataGenerator(rescale=1./255)
-    vali_generator = vali_datagen.flow_from_directory(validation_dir,
+    valid_datagen = ImageDataGenerator(rescale=1./255)
+    valid_generator = valid_datagen.flow_from_directory(validation_dir,
                                                       target_size=target_size,
                                                       color_mode='rgba',
                                                       class_mode='categorical',
                                                       batch_size=128)
+    return train_generator, valid_generator
 
 
 def model_genre(input_shape = (640,480,4), classes = 10):
@@ -103,7 +104,7 @@ def model_genre(input_shape = (640,480,4), classes = 10):
     X = layers.Dense(classes, activation='softmax', name='fc' + str(classes),
                      kernel_initializer = glorot_uniform(seed=9))(X)
 
-    model = Model(inputs=X_input,outputs=X,name='GenreModel')
+    model = models.Model(inputs=X_input,outputs=X,name='GenreModel')
     return model
 
 
