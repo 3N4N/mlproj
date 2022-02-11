@@ -6,6 +6,7 @@ import numpy as np
 
 import tensorflow as tf
 from keras import layers, models
+# from keras import optimizers
 from keras.initializers import glorot_uniform
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -109,7 +110,29 @@ def model_genre(input_shape = (640,480,4), classes = 10):
 
 
 
+import keras.backend as K
+def get_f1(y_true, y_pred): # taken from old keras source code
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    recall = true_positives / (possible_positives + K.epsilon())
+    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
+    return f1_val
 
 if __name__ == "__main__":
     if not train_test_split_done:
         prep_train_test()
+
+    train_generator, valid_generator = gen_img_data(train_dir, test_dir, target_size=(640,480))
+
+    model = model_genre(input_shape=(640,480,4), classes=10)
+    opt = tf.keras.optimizers.Adam(learning_rate = 5e-5)
+    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy', get_f1])
+    model.summary()
+
+    model.fit(train_generator, epochs=40, validation_data=valid_generator)
+
+    preds = model.evaluate(x=X_test,y=Y_test)
+    print(preds[1])
+    print(preds[2])
