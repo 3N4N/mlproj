@@ -152,4 +152,4 @@ if __name__ == "__main__":
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy', get_f1])
     model.summary()
 
-    model.fit(traingen, epochs=40, validation_data=validgen)
+    hist = model.fit(traingen, epochs=40, validation_data=validgen)
