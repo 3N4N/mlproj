@@ -28,10 +28,13 @@ ignorefiles = ['jazz.00054.wav']
 genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
 
 train_dir = f'{dataset_path}/train'
+valid_dir = f'{dataset_path}/valid'
 test_dir = f'{dataset_path}/test'
 
 if not os.path.isdir(train_dir):
     os.makedirs(train_dir)
+if not os.path.isdir(valid_dir):
+    os.makedirs(valid_dir)
 if not os.path.isdir(test_dir):
     os.makedirs(test_dir)
 
@@ -39,20 +42,26 @@ def prep_train_test():
     for g in tqdm(genres, ncols=tqdmcols):
         if not os.path.isdir(f'{train_dir}/{g}'):
             os.makedirs(f'{train_dir}/{g}')
+        if not os.path.isdir(f'{valid_dir}/{g}'):
+            os.makedirs(f'{valid_dir}/{g}')
         if not os.path.isdir(f'{test_dir}/{g}'):
             os.makedirs(f'{test_dir}/{g}')
         filenames = os.listdir(os.path.join(f'{melspec_path}/{g}'))
         random.shuffle(filenames)
         train_files = filenames[:900]
-        test_files = filenames[900:]
+        valid_files = filenames[900:]
+        # valid_files = filenames[900:990]
+        test_files = filenames[990:]
         for f in tqdm(train_files, leave=False, ncols=tqdmcols):
             shutil.copy(f'{melspec_path}/{g}/{f}', f'{train_dir}/{g}')
+        for f in tqdm(valid_files, leave=False, ncols=tqdmcols):
+            shutil.copy(f'{melspec_path}/{g}/{f}', f'{valid_dir}/{g}')
         for f in tqdm(test_files, leave=False, ncols=tqdmcols):
             shutil.copy(f'{melspec_path}/{g}/{f}', f'{test_dir}/{g}')
 
 
 
-def gen_img_data(train_dir, validation_dir, target_size=(640,480)):
+def gen_img_data(train_dir, valid_dir, test_dir, target_size, batch_size):
     from keras.preprocessing.image import ImageDataGenerator
 
     train_datagen = ImageDataGenerator(rescale=1./255)
@@ -60,16 +69,23 @@ def gen_img_data(train_dir, validation_dir, target_size=(640,480)):
                                                         target_size=target_size,
                                                         color_mode="rgba",
                                                         class_mode='categorical',
-                                                        batch_size=128)
+                                                        batch_size=batch_size)
 
-    validation_dir = test_dir
     valid_datagen = ImageDataGenerator(rescale=1./255)
-    valid_generator = valid_datagen.flow_from_directory(validation_dir,
+    valid_generator = valid_datagen.flow_from_directory(valid_dir,
                                                       target_size=target_size,
                                                       color_mode='rgba',
                                                       class_mode='categorical',
-                                                      batch_size=128)
-    return train_generator, valid_generator
+                                                      batch_size=batch_size)
+
+    test_datagen = ImageDataGenerator(rescale=1./255)
+    test_generator = test_datagen.flow_from_directory(test_dir,
+                                                      target_size=target_size,
+                                                      color_mode='rgba',
+                                                      class_mode='categorical',
+                                                      batch_size=batch_size)
+
+    return train_generator, valid_generator, test_generator
 
 
 def model_genre(input_shape = (640,480,4), classes = 10):
@@ -124,15 +140,16 @@ if __name__ == "__main__":
     if not train_test_split_done:
         prep_train_test()
 
-    train_generator, valid_generator = gen_img_data(train_dir, test_dir, target_size=(640,480))
+    target_size = (288, 432)
+    batch_size = 128
 
-    model = model_genre(input_shape=(640,480,4), classes=10)
+    traingen, validgen, testgen = gen_img_data(train_dir, valid_dir, test_dir,
+                                               target_size=target_size,
+                                               batch_size=batch_size)
+
+    model = model_genre(input_shape=(*target_size,4), classes=10)
     opt = tf.keras.optimizers.Adam(learning_rate = 5e-5)
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy', get_f1])
     model.summary()
 
-    model.fit(train_generator, epochs=40, validation_data=valid_generator)
-
-    preds = model.evaluate(x=X_test,y=Y_test)
-    print(preds[1])
-    print(preds[2])
+    model.fit(traingen, epochs=40, validation_data=validgen)
