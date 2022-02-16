@@ -30,7 +30,8 @@ PREPARATION
 
 7. Extract the features.
 
-    python src/extract_features.py
+    python src/extract_features.py -m -s
+    python src/build_model.py
 
 8. Deactivate the virtualenv (or simply close the terminal)
 
