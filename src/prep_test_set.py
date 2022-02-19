@@ -26,12 +26,24 @@ def extract_melspectograms(audio_dir, melspec_path):
         filepath  =  f'{audio_dir}/{filename}'
         melspecimgfile = f'{melspec_path}/{filename.replace(".wav",".png")}'
         # print(melspecimgfile)
-        y,sr = librosa.load(filepath, offset=20, duration=3)
-        mels = librosa.feature.melspectrogram(y=y,sr=sr)
-        p = plt.imshow(librosa.power_to_db(mels,ref=np.max))
-        plt.axis('off')
-        plt.savefig(melspecimgfile)
-        plt.close('all')
+
+        # y,sr = librosa.load(filepath, offset=40, duration=3)
+        # mels = librosa.feature.melspectrogram(y=y,sr=sr)
+        # p = plt.imshow(librosa.power_to_db(mels,ref=np.max))
+        # plt.axis('off')
+        # plt.savefig(melspecimgfile)
+        # plt.close('all')
+
+        dur = 3
+        totdur = int(librosa.get_duration(filename=filepath))
+        for t1 in range(10,totdur,dur):
+            melspecimgfile = f'{melspec_path}/{filename.replace(".wav",f".{t1}.png")}'
+            y,sr = librosa.load(filepath, offset=t1, duration=dur)
+            mels = librosa.feature.melspectrogram(y=y,sr=sr)
+            p = plt.imshow(librosa.power_to_db(mels,ref=np.max))
+            plt.axis('off')
+            plt.savefig(melspecimgfile)
+            plt.close('all')
 
 
 
