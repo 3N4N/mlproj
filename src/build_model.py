@@ -39,6 +39,7 @@ if not os.path.isdir(test_dir):
     os.makedirs(test_dir)
 
 def prep_train_test():
+    random.seed(999)
     for g in tqdm(genres, ncols=tqdmcols):
         if not os.path.isdir(f'{train_dir}/{g}'):
             os.makedirs(f'{train_dir}/{g}')
