@@ -31,9 +31,16 @@ PREPARATION
 7. Extract the features.
 
     python src/extract_features.py -m -s
+    python src/prep_train_test.py   # Skip if train-test sets are already split
     python src/build_model.py
 
 8. Deactivate the virtualenv (or simply close the terminal)
 
-Now you should have a `data.csv` in your project root. That file contains the
-extracted features.
+
+Genre Prediction of Manually Curated Songs
+------------------------------------------
+
+To predict the genre of songs outside the GTZAN dataset, you need to extract the
+mel-spectrogram features. See the file `src/prep_test_set.py` for inspiration.
+Also see `music-genre-classification.ipynb` to see how the trained model can be
+used to predict genres.
