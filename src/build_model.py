@@ -1,7 +1,5 @@
 import os
 import random
-import shutil
-from tqdm.auto import tqdm
 import numpy as np
 
 import pickle
@@ -12,11 +10,6 @@ from keras.initializers import glorot_uniform
 from keras.preprocessing.image import ImageDataGenerator
 
 
-
-
-# reset this variable if you haven't split the dataset already
-train_test_split_done = True
-
 tqdmcols = 80
 dataset_path = './data/gtzan'
 features_path = f'{dataset_path}/features'
@@ -26,41 +19,10 @@ melspec_path = f'{dataset_path}/melspecs_3sec'
 ignorefiles = ['jazz.00054.wav']
 
 
-genres = 'blues classical country disco hiphop jazz metal pop reggae rock'.split()
 
 train_dir = f'{dataset_path}/train'
 valid_dir = f'{dataset_path}/valid'
 test_dir = f'{dataset_path}/test'
-
-if not os.path.isdir(train_dir):
-    os.makedirs(train_dir)
-if not os.path.isdir(valid_dir):
-    os.makedirs(valid_dir)
-if not os.path.isdir(test_dir):
-    os.makedirs(test_dir)
-
-def prep_train_test():
-    random.seed(999)
-    for g in tqdm(genres, ncols=tqdmcols):
-        if not os.path.isdir(f'{train_dir}/{g}'):
-            os.makedirs(f'{train_dir}/{g}')
-        if not os.path.isdir(f'{valid_dir}/{g}'):
-            os.makedirs(f'{valid_dir}/{g}')
-        if not os.path.isdir(f'{test_dir}/{g}'):
-            os.makedirs(f'{test_dir}/{g}')
-        filenames = os.listdir(os.path.join(f'{melspec_path}/{g}'))
-        random.shuffle(filenames)
-        train_files = filenames[:900]
-        # valid_files = filenames[900:]
-        valid_files = filenames[900:950]
-        test_files = filenames[950:]
-        for f in tqdm(train_files, leave=False, ncols=tqdmcols):
-            shutil.copy(f'{melspec_path}/{g}/{f}', f'{train_dir}/{g}')
-        for f in tqdm(valid_files, leave=False, ncols=tqdmcols):
-            shutil.copy(f'{melspec_path}/{g}/{f}', f'{valid_dir}/{g}')
-        for f in tqdm(test_files, leave=False, ncols=tqdmcols):
-            shutil.copy(f'{melspec_path}/{g}/{f}', f'{test_dir}/{g}')
-
 
 
 def gen_img_data(train_dir, valid_dir, test_dir, target_size, batch_size):
@@ -139,9 +101,6 @@ def get_f1(y_true, y_pred): # taken from old keras source code
     return f1_val
 
 if __name__ == "__main__":
-    if not train_test_split_done:
-        prep_train_test()
-
     target_size = (288, 432)
     batch_size = 128
 

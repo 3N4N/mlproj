@@ -36,7 +36,7 @@ def extract_melspectograms(audio_dir, melspec_path):
 
         dur = 3
         totdur = int(librosa.get_duration(filename=filepath))
-        for t1 in range(10,totdur,dur):
+        for t1 in range(0,totdur,dur):
             melspecimgfile = f'{melspec_path}/{filename.replace(".wav",f".{t1}.png")}'
             y,sr = librosa.load(filepath, offset=t1, duration=dur)
             mels = librosa.feature.melspectrogram(y=y,sr=sr)
