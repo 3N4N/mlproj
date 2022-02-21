@@ -4,6 +4,7 @@ import shutil
 from tqdm.auto import tqdm
 import numpy as np
 
+import pickle
 import tensorflow as tf
 from keras import layers, models
 # from keras import optimizers
@@ -50,9 +51,9 @@ def prep_train_test():
         filenames = os.listdir(os.path.join(f'{melspec_path}/{g}'))
         random.shuffle(filenames)
         train_files = filenames[:900]
-        valid_files = filenames[900:]
-        # valid_files = filenames[900:990]
-        test_files = filenames[990:]
+        # valid_files = filenames[900:]
+        valid_files = filenames[900:950]
+        test_files = filenames[950:]
         for f in tqdm(train_files, leave=False, ncols=tqdmcols):
             shutil.copy(f'{melspec_path}/{g}/{f}', f'{train_dir}/{g}')
         for f in tqdm(valid_files, leave=False, ncols=tqdmcols):
@@ -154,3 +155,6 @@ if __name__ == "__main__":
     model.summary()
 
     hist = model.fit(traingen, epochs=40, validation_data=validgen)
+    with open('history.pkl', 'wb') as f:
+        pickle.dump(history, f)
+    model.save('models/model')
