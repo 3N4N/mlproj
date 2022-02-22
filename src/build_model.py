@@ -114,6 +114,6 @@ if __name__ == "__main__":
     model.summary()
 
     hist = model.fit(traingen, epochs=40, validation_data=validgen)
-    with open('history.pkl', 'wb') as f:
-        pickle.dump(history, f)
     model.save('models/model')
+    with open('history.pkl', 'wb') as f:
+        pickle.dump(hist.history, f)
